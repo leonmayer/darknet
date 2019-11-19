@@ -228,6 +228,7 @@ def classify(net, meta, im):
 
 def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
     
+    print("TESTTESTTEST")
     if isinstance(image, bytes):  
         # image is a filename 
         # i.e. image = b'/darknet/data/dog.jpg'
