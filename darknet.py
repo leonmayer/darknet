@@ -238,26 +238,11 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
         # i.e. image = cv2.imread('/darknet/data/dog.jpg')
         im = array_to_image(image)
         rgbgr_image(im)
-    
-    num = c_int(0)
-    pnum = pointer(num)
-    predict_image(net, im)
-    dets = get_network_boxes(net, im.w, im.h, thresh, 
-                             hier_thresh, None, 0, pnum)
-    num = pnum[0]
-    if nms: do_nms_obj(dets, num, meta.classes, nms)
-
-    res = []
-    for j in range(num):
-        for i in range(meta.classes):
-            if dets[j].prob[i] > 0:
-                b = dets[j].bbox
-                res.append((meta.names[i], dets[j].prob[i], 
-                           (b.x, b.y, b.w, b.h)))
-    res = sorted(res, key=lambda x: -x[1])
-    if isinstance(image, bytes): free_image(im)
-    free_detections(dets, num)
-    return res
+    if debug: print("Loaded image")
+    ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
+    free_image(im)
+    if debug: print("freed image")
+    return ret
 
 def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     #import cv2
