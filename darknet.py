@@ -226,7 +226,7 @@ def classify(net, meta, im):
     res = sorted(res, key=lambda x: -x[1])
     return res
 
-def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
+def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug=False):
     
     print("TESTTESTTEST")
     if isinstance(image, bytes):  
