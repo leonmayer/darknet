@@ -243,9 +243,10 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     #custom_image_bgr = cv2.imread(image) # use: detect(,,imagePath,)
     #custom_image = cv2.cvtColor(custom_image_bgr, cv2.COLOR_BGR2RGB)
     #custom_image = cv2.resize(custom_image,(lib.network_width(net), lib.network_height(net)), interpolation = cv2.INTER_LINEAR)
-    import imageio
-    im = imageio.imread(im)
-    custom_image = matplotlib.pyplot.imread(im)
+    import pkg_resources
+    pkg_resources.require("scipy==1.0.0")
+    import scipy
+    custom_image = scipy.misc.imread(im)
     im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
     num = c_int(0)
     if debug: print("Assigned num")
