@@ -231,10 +231,10 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     Performs the meat of the detection
     """
     #pylint: disable= C0321
-    im = load_image(image, 0, 0)
+    #im = load_image(image, 0, 0)
     if debug: print("Loaded image")
-    ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
-    free_image(im)
+    ret = detect_image(net, meta, image, thresh, hier_thresh, nms, debug)
+    #free_image(im)
     if debug: print("freed image")
     return ret
 
