@@ -239,13 +239,13 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     return ret
 
 def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
-    #import cv2
+    import cv2
     #custom_image_bgr = cv2.imread(image) # use: detect(,,imagePath,)
     #custom_image = cv2.cvtColor(custom_image_bgr, cv2.COLOR_BGR2RGB)
     #custom_image = cv2.resize(custom_image,(lib.network_width(net), lib.network_height(net)), interpolation = cv2.INTER_LINEAR)
     import numpy as np
-    data = np.load(im)
-    custom_image = data['arr_0']
+    im = cv2.imread(im)
+    #custom_image = data['arr_0']
     im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
     num = c_int(0)
     if debug: print("Assigned num")
