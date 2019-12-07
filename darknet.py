@@ -421,6 +421,7 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
                 rr4, cc4 = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] + 1 for x in boundingBox], shape= shape)
                 rr5, cc5 = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] - 1 for x in boundingBox], shape= shape)
                 boxColor = (int(255 * (1 - (confidence ** 2))), int(255 * (confidence ** 2)), 0)
+                image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
                 draw.set_color(image, (rr, cc), boxColor, alpha= 0.8)
                 draw.set_color(image, (rr2, cc2), boxColor, alpha= 0.8)
                 draw.set_color(image, (rr3, cc3), boxColor, alpha= 0.8)
