@@ -205,11 +205,11 @@ predict_image.restype = POINTER(c_float)
 def array_to_image(arr):
     import numpy as np
     # need to return old values to avoid python freeing memory
-    #arr = arr.transpose(2,0,1)
+    arr = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
+    arr = arr.transpose(2,0,1) 
     c = arr.shape[0]
     h = arr.shape[1]
-    #w = arr.shape[2]
-    w = 1
+    w = arr.shape[2]
     arr = np.ascontiguousarray(arr.flat, dtype=np.float32) / 255.0
     data = arr.ctypes.data_as(POINTER(c_float))
     im = IMAGE(w,h,c,data)
