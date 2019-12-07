@@ -389,9 +389,9 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
             from skimage import io, draw
             import numpy as np
             image = io.imread(imagePath)
-            """
             print("*** "+str(len(detections))+" Results, color coded by confidence ***")
             imcaption = []
+            """
             for detection in detections:
                 label = detection[0]
                 confidence = detection[1]
@@ -428,9 +428,9 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
                 draw.set_color(image, (rr4, cc4), boxColor, alpha= 0.8)
                 draw.set_color(image, (rr5, cc5), boxColor, alpha= 0.8)
             """
-            #if not makeImageOnly:
-            io.imshow(image)
-            io.show()
+            if not makeImageOnly:
+                io.imshow(image)
+                io.show()
             detections = {
                 "detections": detections,
                 "image": image,
