@@ -429,8 +429,8 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
                 draw.set_color(image, (rr5, cc5), boxColor, alpha= 0.8)
             """
             #if not makeImageOnly:
-                io.imshow(image)
-                io.show()
+            io.imshow(image)
+            io.show()
             detections = {
                 "detections": detections,
                 "image": image,
