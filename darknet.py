@@ -232,9 +232,9 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     Performs the meat of the detection
     """
     #pylint: disable= C0321
-    #im = load_image(image, 0, 0)
+    im = load_image(image, 0, 0)
     if debug: print("Loaded image")
-    ret = detect_image(net, meta, image, thresh, hier_thresh, nms, debug)
+    ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
     #free_image(im)
     if debug: print("freed image")
     return ret
@@ -244,10 +244,11 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     #custom_image_bgr = cv2.imread(image) # use: detect(,,imagePath,)
     #custom_image = cv2.cvtColor(custom_image_bgr, cv2.COLOR_BGR2RGB)
     #custom_image = cv2.resize(custom_image,(lib.network_width(net), lib.network_height(net)), interpolation = cv2.INTER_LINEAR)
-    import numpy as np
-    data=np.load(im)
-    custom_image = data['arr_0']
-    im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
+    #
+    #import numpy as np
+    #data=np.load(im)
+    #custom_image = data['arr_0']
+    #im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
     num = c_int(0)
     if debug: print("Assigned num")
     pnum = pointer(num)
