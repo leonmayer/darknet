@@ -205,11 +205,12 @@ predict_image.restype = POINTER(c_float)
 def array_to_image(arr):
     import numpy as np
     # need to return old values to avoid python freeing memory
-    arr = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
-    arr = arr.transpose(2,0,1) 
-    c = arr.shape[0]
-    h = arr.shape[1]
-    w = arr.shape[2]
+    #arr = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
+    #arr = arr.transpose(2,0,1) 
+    #c = arr.shape[0]
+    c = 1
+    h = arr.shape[0]
+    w = arr.shape[1]
     arr = np.ascontiguousarray(arr.flat, dtype=np.float32) / 255.0
     data = arr.ctypes.data_as(POINTER(c_float))
     im = IMAGE(w,h,c,data)
@@ -232,23 +233,9 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     Performs the meat of the detection
     """
     #pylint: disable= C0321
-    im = load_image(image, 0, 0)
-    
-    print("W: ")
-    print(im.w)
-    print("\n") 
-    print("H: ")
-    print(im.h)
-    print("\n")
-    print("C: ")
-    print(im.c)
-    print("\n")
-    print("data: ")
-    print(im.data)
-    print("\n")
-          
+    #im = load_image(image, 0, 0)       
     if debug: print("Loaded image")
-    ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
+    ret = detect_image(net, meta, image, thresh, hier_thresh, nms, debug)
     #free_image(im)
     if debug: print("freed image")
     return ret
@@ -259,10 +246,10 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     #custom_image = cv2.cvtColor(custom_image_bgr, cv2.COLOR_BGR2RGB)
     #custom_image = cv2.resize(custom_image,(lib.network_width(net), lib.network_height(net)), interpolation = cv2.INTER_LINEAR)
     #
-    #import numpy as np
-    #data=np.load(im)
-    #custom_image = data['arr_0']
-    #im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
+    import numpy as np
+    data=np.load(im)
+    custom_image = data['arr_0']
+    im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
     num = c_int(0)
     if debug: print("Assigned num")
     pnum = pointer(num)
