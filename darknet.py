@@ -213,6 +213,20 @@ def array_to_image(arr):
     arr = np.ascontiguousarray(arr.flat, dtype=np.float32) / 255.0
     data = arr.ctypes.data_as(POINTER(c_float))
     im = IMAGE(w,h,c,data)
+    
+    print("W: ")
+    print(im.w)
+    print("\n") 
+    print("H: ")
+    print(im.h)
+    print("\n")
+    print("C: ")
+    print(im.c)
+    print("\n")
+    print("data: ")
+    print(im.data)
+    print("\n")
+    
     return im, arr
 
 def classify(net, meta, im):
