@@ -266,7 +266,7 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     #
     import numpy as np
     print("importednumpy")
-    data = np.load(im, encoding = 'ASCII')
+    data = np.load(im, encoding = 'bytes')
     print("loaded")
     custom_image = data['arr_0']
     print("custom")
