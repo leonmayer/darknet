@@ -266,7 +266,7 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     print("loaded")
     custom_image = data['arr_0']
     print("custom")
-    im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
+    im = nparray_to_image(custom_image)		# you should comment line below: free_image(im)
     print("arr")
     num = c_int(0)
     if debug: print("Assigned num")
@@ -308,6 +308,10 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     if debug: print("freed detections")
     return res
 
+def nparray_to_image(img):
+    data = img.ctypes.data_as(POINTER(c_ubyte))
+    image = ndarray_image(data, img.ctypes.shape, img.ctypes.strides)
+    return image
 
 netMain = None
 metaMain = None
