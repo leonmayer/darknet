@@ -235,6 +235,7 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     #pylint: disable= C0321
     #im = load_image(image, 0, 0)       
     if debug: print("Loaded image")
+    print("Indetect")
     ret = detect_image(net, meta, image, thresh, hier_thresh, nms, debug)
     #free_image(im)
     if debug: print("freed image")
@@ -247,9 +248,13 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     #custom_image = cv2.resize(custom_image,(lib.network_width(net), lib.network_height(net)), interpolation = cv2.INTER_LINEAR)
     #
     import numpy as np
+    print("importednumpy")
     data=np.load(im)
+    print("loaded")
     custom_image = data['arr_0']
+    print("custom")
     im, arr = array_to_image(custom_image)		# you should comment line below: free_image(im)
+    print("arr")
     num = c_int(0)
     if debug: print("Assigned num")
     pnum = pointer(num)
