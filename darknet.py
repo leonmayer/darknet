@@ -234,6 +234,7 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     #pylint: disable= C0321
     #im = load_image(image, 0, 0)
     
+    import numpy as np
     im = np.load(image)
     im = im['arr_0']
     im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
