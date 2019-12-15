@@ -248,7 +248,7 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     im, arr = array_to_image(arr)
     
     if debug: print("Loaded image") 
-    ret = detect_image(net, meta, image, thresh, hier_thresh, nms, debug)
+    ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
     #free_image(im)
     if debug: print("freed image")
     return ret
