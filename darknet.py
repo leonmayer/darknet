@@ -31,6 +31,8 @@ from ctypes import *
 import math
 import random
 import os
+import numpy as np
+import time
 
 def sample(probs):
     s = sum(probs)
@@ -203,7 +205,6 @@ predict_image.argtypes = [c_void_p, IMAGE]
 predict_image.restype = POINTER(c_float)
 
 def array_to_image(arr):
-    import numpy as np
     # need to return old values to avoid python freeing memory
     arr = arr.transpose(2,0,1) 
     c = arr.shape[0]
@@ -233,8 +234,7 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     """
     #pylint: disable= C0321
     #im = load_image(image, 0, 0)
-    
-    import numpy as np
+    tic = time.time()
     im = np.load(image)
     im = im['arr_0']
     im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
@@ -248,7 +248,10 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     im, arr = array_to_image(arr)
     
     if debug: print("Loaded image") 
+    print('%.3fs data manipulation\n' % (time.time() - tic))
+    tic = time.time()
     ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
+    print('%.3fs detect_image\n' % (time.time() - tic))
     #free_image(im)
     if debug: print("freed image")
     return ret
