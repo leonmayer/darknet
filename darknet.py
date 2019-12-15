@@ -399,7 +399,8 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
             import numpy as np
             image = io.imread(imagePath)
             
-            io.imwrite("temp/showpic.jpg", image)
+            import imageio
+            imageio.imwrite("temp/showpic.jpg", image)
             image = io.imread("temp/showpic.jpg")
             
             print("*** "+str(len(detections))+" Results, color coded by confidence ***")
