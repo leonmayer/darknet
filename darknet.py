@@ -234,9 +234,14 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     """
     #pylint: disable= C0321
     #im = load_image(image, 0, 0)
+    toc = time.time()
     tic = time.time()
     im = np.load(image)
+    print('%.3fs np.load\n' % (time.time() - tic))
+    tic = time.time()
     im = im['arr_0']
+    print('%.3fs arr_0\n' % (time.time() - tic))
+    tic = time.time()
     im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
     npzmin = np.amin(im)
     npzmax = np.amax(im)
@@ -244,11 +249,16 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     nenner = np.subtract(npzmax, npzmin)
     teil = np.divide(zahler, nenner)
     arr = np.multiply(teil, 255)
+    print('%.3fs minmaxanpassung\n' % (time.time() - tic))
+    tic = time.time()
     arr = arr.astype(np.uint8)
+    print('%.3fs uint8\n' % (time.time() - tic))
+    tic = time.time()
     im, arr = array_to_image(arr)
+    print('%.3fs array_to_image\n' % (time.time() - tic))
     
     if debug: print("Loaded image") 
-    print('%.3fs data manipulation\n' % (time.time() - tic))
+    print('%.3fs data manipulation\n' % (time.time() - toc))
     tic = time.time()
     ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
     print('%.3fs detect_image\n' % (time.time() - tic))
