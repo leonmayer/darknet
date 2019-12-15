@@ -205,27 +205,13 @@ predict_image.restype = POINTER(c_float)
 def array_to_image(arr):
     import numpy as np
     # need to return old values to avoid python freeing memory
-    arr = np.repeat(arr[:, :, np.newaxis], 3, axis=2)
-    #arr = arr.transpose(2,0,1) 
+    arr = arr.transpose(2,0,1) 
     c = arr.shape[0]
     h = arr.shape[1]
     w = arr.shape[2]
     arr = np.ascontiguousarray(arr.flat, dtype=np.float32) / 255.0
     data = arr.ctypes.data_as(POINTER(c_float))
     im = IMAGE(w,h,c,data)
-    
-    print("W: ")
-    print(im.w)
-    print("\n") 
-    print("H: ")
-    print(im.h)
-    print("\n")
-    print("C: ")
-    print(im.c)
-    print("\n")
-    print("data: ")
-    print(im.data)
-    print("\n")
     
     return im, arr
 
@@ -246,9 +232,21 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     Performs the meat of the detection
     """
     #pylint: disable= C0321
-    #im = load_image(image, 0, 0)       
-    if debug: print("Loaded image")
-    print("Indetect")
+    #im = load_image(image, 0, 0)
+    
+    im = np.load(image)
+    im = im['arr_0']
+    im = np.repeat(im[:, :, np.newaxis], 3, axis=2)
+    npzmin = np.amin(im)
+    npzmax = np.amax(im)
+    zahler = np.subtract(im, npzmin)
+    nenner = np.subtract(npzmax, npzmin)
+    teil = np.divide(zahler, nenner)
+    arr = np.multiply(teil, 255)
+    arr = arr.astype(np.uint8)
+    im, arr = array_to_image(arr)
+    
+    if debug: print("Loaded image") 
     ret = detect_image(net, meta, image, thresh, hier_thresh, nms, debug)
     #free_image(im)
     if debug: print("freed image")
@@ -408,6 +406,10 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
             from skimage import io, draw
             import numpy as np
             image = io.imread(imagePath)
+            
+            io.imwrite("temp/showpic.jpg", image)
+            image = io.imread("temp/showpic.jpg")
+            
             print("*** "+str(len(detections))+" Results, color coded by confidence ***")
             imcaption = []
             for detection in detections:
