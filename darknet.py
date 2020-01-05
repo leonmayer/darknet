@@ -147,7 +147,7 @@ if hasGPU:
     set_gpu = lib.cuda_set_device
     set_gpu.argtypes = [c_int]
 
-init_cpu = lib.init_cpu
+#init_cpu = lib.init_cpu
 
 make_image = lib.make_image
 make_image.argtypes = [c_int, c_int, c_int]
