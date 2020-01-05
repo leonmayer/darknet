@@ -202,10 +202,6 @@ load_image = lib.load_image_color
 load_image.argtypes = [c_char_p, c_int, c_int]
 load_image.restype = IMAGE
 
-ndarray_image = lib.ndarray_to_image
-ndarray_image.argtypes = [POINTER(c_ubyte), POINTER(c_long), POINTER(c_long)]
-ndarray_image.restype = IMAGE
-
 detec_train = lib.train_detector
 detec_train.argtypes = [c_char_p, c_char_p, c_char_p]
 
@@ -327,13 +323,6 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     free_detections(dets, num)
     if debug: print("freed detections")
     return res
-
-
-def nparray_to_image(img):
-    data = img.ctypes.data_as(POINTER(c_ubyte))
-    image = ndarray_image(data, img.ctypes.shape, img.ctypes.strides)
-    return image
-
 
 netMain = None
 metaMain = None
