@@ -35,6 +35,9 @@ import cv2
 import time
 import numpy as np
 
+def testitest():
+    print("JOOOOOOOOOOOOOOOOOOOOOOOOOOO")
+
 def sample(probs):
     s = sum(probs)
     probs = [a/s for a in probs]
