@@ -434,7 +434,7 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
             image = io.imread(imagePath)
             import imageio
             imageio.imwrite("/content/temp/temp1.jpg", image)
-            image = io.imread("content/temp/temp1.jpg")
+            image = io.imread("/content/temp/temp1.jpg")
 
             print("*** "+str(len(detections))+" Results, color coded by confidence ***")
             imcaption = []
