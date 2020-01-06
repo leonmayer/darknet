@@ -329,6 +329,7 @@ metaMain = None
 altNames = None
 
 def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yolov3.cfg", weightPath = "yolov3.weights", metaPath= "./cfg/coco.data", showImage= True, makeImageOnly = False, initOnly= False):
+    print("Hee")
     """
     Convenience function to handle the detection and returns of objects.
 
@@ -376,16 +377,22 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
         }
     """
     # Import the global variables. This lets us instance Darknet once, then just call performDetect() again without instancing again
+    print("a")
     global metaMain, netMain, altNames #pylint: disable=W0603
+    print("b")
     assert 0 < thresh < 1, "Threshold should be a float between zero and one (non-inclusive)"
     if not os.path.exists(configPath):
         raise ValueError("Invalid config path `"+os.path.abspath(configPath)+"`")
+    print("c")
     if not os.path.exists(weightPath):
         raise ValueError("Invalid weight path `"+os.path.abspath(weightPath)+"`")
+    print("d")
     if not os.path.exists(metaPath):
         raise ValueError("Invalid data file path `"+os.path.abspath(metaPath)+"`")
+    print("e")
     if netMain is None:
         netMain = load_net_custom(configPath.encode("ascii"), weightPath.encode("ascii"), 0, 1)  # batch size = 1
+    print("f")
     if metaMain is None:
         metaMain = load_meta(metaPath.encode("ascii"))
     print("1")
