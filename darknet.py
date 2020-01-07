@@ -433,6 +433,7 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
             image = io.imread(imagePath)
             image = np.flipud(image)
             image = np.fliplr(image)
+            '''
             npzmin = np.amin(image)
             npzmax = np.amax(image)
             zahler = np.subtract(image, npzmin)
@@ -440,6 +441,7 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
             teil = np.divide(zahler, nenner)
             image = np.multiply(teil, 255)
             image = image.astype(np.uint8)
+            '''
             imageio.imwrite("/content/temp/temp1.jpg", image)
             image = io.imread("/content/temp/temp1.jpg")
 
