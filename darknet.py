@@ -484,7 +484,7 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
             }
         except Exception as e:
             print("Unable to show image: "+str(e))
-    return detections
+    #return detections
 
 #Purpose: Train the network with .npz files and output weights
 #datapath: Path to .data file
