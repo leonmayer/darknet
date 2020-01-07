@@ -428,11 +428,18 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
     if showImage:
         try:
             from skimage import io, draw
-            import numpy as np
+            import numpy as np  
+            import imageio
             image = io.imread(imagePath)
             image = np.flipud(image)
             image = np.fliplr(image)
-            import imageio
+            npzmin = np.amin(image)
+            npzmax = np.amax(image)
+            zahler = np.subtract(image, npzmin)
+            nenner = np.subtract(npzmax, npzmin)
+            teil = np.divide(zahler, nenner)
+            image = np.multiply(teil, 255)
+            image = image.astype(np.uint8)
             imageio.imwrite("/content/temp/temp1.jpg", image)
             image = io.imread("/content/temp/temp1.jpg")
 
