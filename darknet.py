@@ -35,9 +35,6 @@ import cv2
 import time
 import numpy as np
 
-def testitest():
-    print("JOOOOOOOOOOOOOOOOOOOOOOOOOOO")
-
 def sample(probs):
     s = sum(probs)
     probs = [a/s for a in probs]
@@ -216,6 +213,13 @@ predict_image.argtypes = [c_void_p, IMAGE]
 predict_image.restype = POINTER(c_float)
 
 
+
+
+
+
+
+
+
 def array_to_image(arr):
     # need to return old values to avoid python freeing memory
     arr = arr.transpose(2,0,1)
@@ -247,8 +251,8 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     #pylint: disable= C0321
     #im = load_image(image, 0, 0)
     
-    tic = time.time()
     im = np.load(image)
+    print("Image loaded.")
     im = im['arr_0']
     im = np.flipud(im)
     im = np.fliplr(im)
@@ -263,12 +267,9 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45, debug= False):
     arr = arr.astype(np.uint8)
     
     im, arr = array_to_image(arr)
-    if debug: print("Loaded image")
-    print('%.3fs data manipulation\n' % (time.time() - tic))
-
-    tic = time.time()
+   
     ret = detect_image(net, meta, im, thresh, hier_thresh, nms, debug)
-    print('%.3fs detect_image\n' % (time.time() - tic))
+    print("Detection performed.")
     #free_image(im)
     if debug: print("freed image")
     return ret
@@ -324,12 +325,16 @@ def detect_image(net, meta, im, thresh=.5, hier_thresh=.5, nms=.45, debug= False
     if debug: print("freed detections")
     return res
 
+def nparray_to_image(img):
+    data = img.ctypes.data_as(POINTER(c_ubyte))
+    image = ndarray_image(data, img.ctypes.shape, img.ctypes.strides)
+    return image
+
 netMain = None
 metaMain = None
 altNames = None
 
 def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yolov3.cfg", weightPath = "yolov3.weights", metaPath= "./cfg/coco.data", showImage= True, makeImageOnly = False, initOnly= False):
-    print("Hee")
     """
     Convenience function to handle the detection and returns of objects.
 
@@ -377,25 +382,20 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
         }
     """
     # Import the global variables. This lets us instance Darknet once, then just call performDetect() again without instancing again
-    print("a")
     global metaMain, netMain, altNames #pylint: disable=W0603
-    print("b")
     assert 0 < thresh < 1, "Threshold should be a float between zero and one (non-inclusive)"
     if not os.path.exists(configPath):
         raise ValueError("Invalid config path `"+os.path.abspath(configPath)+"`")
-    print("c")
     if not os.path.exists(weightPath):
         raise ValueError("Invalid weight path `"+os.path.abspath(weightPath)+"`")
-    print("d")
     if not os.path.exists(metaPath):
         raise ValueError("Invalid data file path `"+os.path.abspath(metaPath)+"`")
-    print("e")
     if netMain is None:
         netMain = load_net_custom(configPath.encode("ascii"), weightPath.encode("ascii"), 0, 1)  # batch size = 1
-    print("f")
+        print("Network loaded.")
     if metaMain is None:
         metaMain = load_meta(metaPath.encode("ascii"))
-    print("1")
+        print("Metadata loaded.")
     if altNames is None:
         # In Python 3, the metafile default access craps out on Windows (but not Linux)
         # Read the names file and create a list to feed to detect
@@ -424,14 +424,14 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "./cfg/yo
         raise ValueError("Invalid image path `"+os.path.abspath(imagePath)+"`")
     # Do the detection
     #detections = detect(netMain, metaMain, imagePath, thresh)	# if is used cv2.imread(image)
-    print("2")
     detections = detect(netMain, metaMain, imagePath, thresh)
-    print("3")
     if showImage:
         try:
             from skimage import io, draw
             import numpy as np
             image = io.imread(imagePath)
+            image = np.flipud(image)
+            image = np.fliplr(image)
             import imageio
             imageio.imwrite("/content/temp/temp1.jpg", image)
             image = io.imread("/content/temp/temp1.jpg")
