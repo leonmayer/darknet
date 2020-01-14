@@ -444,5 +444,149 @@ def performDetect(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content
             print("Unable to show image: "+str(e))
     return detections
 
+def performDetectrgb(imagePath="data/dog.jpg", thresh= 0.25, configPath = "/content/gdrive/My Drive/darknetdata/yolov3.cfg", weightPath = "/content/gdrive/My Drive/darknetdata/yolov3.weights", metaPath= "cfg/coco.data", showImage= True, makeImageOnly = False, initOnly= False):
+    """
+    Convenience function to handle the detection and returns of objects.
+
+    Displaying bounding boxes requires libraries scikit-image and numpy
+
+    Parameters
+    ----------------
+    imagePath: str
+        Path to the image to evaluate. Raises ValueError if not found
+
+    thresh: float (default= 0.25)
+        The detection threshold
+
+    configPath: str
+        Path to the configuration file. Raises ValueError if not found
+
+    weightPath: str
+        Path to the weights file. Raises ValueError if not found
+
+    metaPath: str
+        Path to the data file. Raises ValueError if not found
+
+    showImage: bool (default= True)
+        Compute (and show) bounding boxes. Changes return.
+
+    makeImageOnly: bool (default= False)
+        If showImage is True, this won't actually *show* the image, but will create the array and return it.
+
+    initOnly: bool (default= False)
+        Only initialize globals. Don't actually run a prediction.
+
+    Returns
+    ----------------------
+
+
+    When showImage is False, list of tuples like
+        ('obj_label', confidence, (bounding_box_x_px, bounding_box_y_px, bounding_box_width_px, bounding_box_height_px))
+        The X and Y coordinates are from the center of the bounding box. Subtract half the width or height to get the lower corner.
+
+    Otherwise, a dict with
+        {
+            "detections": as above
+            "image": a numpy array representing an image, compatible with scikit-image
+            "caption": an image caption
+        }
+    """
+    # Import the global variables. This lets us instance Darknet once, then just call performDetect() again without instancing again
+    global metaMain, netMain, altNames #pylint: disable=W0603
+    assert 0 < thresh < 1, "Threshold should be a float between zero and one (non-inclusive)"
+    if not os.path.exists(configPath):
+        raise ValueError("Invalid config path `"+os.path.abspath(configPath)+"`")
+    if not os.path.exists(weightPath):
+        raise ValueError("Invalid weight path `"+os.path.abspath(weightPath)+"`")
+    if not os.path.exists(metaPath):
+        raise ValueError("Invalid data file path `"+os.path.abspath(metaPath)+"`")
+    if netMain is None:
+        netMain = load_net_custom(configPath.encode("ascii"), weightPath.encode("ascii"), 0, 1)  # batch size = 1
+    if metaMain is None:
+        metaMain = load_meta(metaPath.encode("ascii"))
+    if altNames is None:
+        # In Python 3, the metafile default access craps out on Windows (but not Linux)
+        # Read the names file and create a list to feed to detect
+        try:
+            with open(metaPath) as metaFH:
+                metaContents = metaFH.read()
+                import re
+                match = re.search("names *= *(.*)$", metaContents, re.IGNORECASE | re.MULTILINE)
+                if match:
+                    result = match.group(1)
+                else:
+                    result = None
+                try:
+                    if os.path.exists(result):
+                        with open(result) as namesFH:
+                            namesList = namesFH.read().strip().split("\n")
+                            altNames = [x.strip() for x in namesList]
+                except TypeError:
+                    pass
+        except Exception:
+            pass
+    if initOnly:
+        print("Initialized detector")
+        return None
+    if not os.path.exists(imagePath):
+        raise ValueError("Invalid image path `"+os.path.abspath(imagePath)+"`")
+    # Do the detection
+    #detections = detect(netMain, metaMain, imagePath, thresh)	# if is used cv2.imread(image)
+    detections = detect(netMain, metaMain, imagePath.encode("ascii"), thresh)
+    if showImage:
+        try:
+            from skimage import io, draw
+            import numpy as np
+            image = io.imread(imagePath)
+            print("*** "+str(len(detections))+" Results, color coded by confidence ***")
+            imcaption = []
+            for detection in detections:
+                label = detection[0]
+                confidence = detection[1]
+                pstring = label+": "+str(np.rint(100 * confidence))+"%"
+                imcaption.append(pstring)
+                print(pstring)
+                bounds = detection[2]
+                shape = image.shape
+                # x = shape[1]
+                # xExtent = int(x * bounds[2] / 100)
+                # y = shape[0]
+                # yExtent = int(y * bounds[3] / 100)
+                yExtent = int(bounds[3])
+                xEntent = int(bounds[2])
+                # Coordinates are around the center
+                xCoord = int(bounds[0] - bounds[2]/2)
+                yCoord = int(bounds[1] - bounds[3]/2)
+                boundingBox = [
+                    [xCoord, yCoord],
+                    [xCoord, yCoord + yExtent],
+                    [xCoord + xEntent, yCoord + yExtent],
+                    [xCoord + xEntent, yCoord]
+                ]
+                # Wiggle it around to make a 3px border
+                rr, cc = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] for x in boundingBox], shape= shape)
+                rr2, cc2 = draw.polygon_perimeter([x[1] + 1 for x in boundingBox], [x[0] for x in boundingBox], shape= shape)
+                rr3, cc3 = draw.polygon_perimeter([x[1] - 1 for x in boundingBox], [x[0] for x in boundingBox], shape= shape)
+                rr4, cc4 = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] + 1 for x in boundingBox], shape= shape)
+                rr5, cc5 = draw.polygon_perimeter([x[1] for x in boundingBox], [x[0] - 1 for x in boundingBox], shape= shape)
+                boxColor = (int(255 * (1 - (confidence ** 2))), int(255 * (confidence ** 2)), 0)
+                #image = np.repeat(image[:, :, np.newaxis], 3, axis=2)
+                draw.set_color(image, (rr, cc), boxColor, alpha= 0.8)
+                draw.set_color(image, (rr2, cc2), boxColor, alpha= 0.8)
+                draw.set_color(image, (rr3, cc3), boxColor, alpha= 0.8)
+                draw.set_color(image, (rr4, cc4), boxColor, alpha= 0.8)
+                draw.set_color(image, (rr5, cc5), boxColor, alpha= 0.8)
+            if not makeImageOnly:
+                io.imshow(image)
+                io.show()
+            detections = {
+                "detections": detections,
+                "image": image,
+                "caption": "\n<br/>".join(imcaption)
+            }
+        except Exception as e:
+            print("Unable to show image: "+str(e))
+    return detections
+
 if __name__ == "__main__":
     print(performDetect())
